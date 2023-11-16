@@ -1,1 +1,8 @@
 .env
+results_old.json
+Taylor.code-workspace
+metadata.txt
+*.json
+raw_music
+*.mp3
+*.txt

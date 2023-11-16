@@ -4,17 +4,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-with open("metadata.txt", "r") as file:
+
+def print_json():
+    print(f"printing json")
+    with open("taylor4.json", "w") as json_file:
+        json.dump(results, json_file)
+
+
+with open("metadata2_reformatted.txt", "r") as file:
     data = file.readlines()
 
 metadata = []
 for line in data:
-    url, name = line.strip().split(", ")
-    metadata.append((url, name))
+    print(line)
+    url_and_rest = line.strip().split(", ")
+    metadata.append((url_and_rest[0][:-4], ", ".join(url_and_rest[1:])))
 
 
 results = {}
-for url, name in metadata:
+count = 0
+for url, name in metadata[100:]:
     handler = fal.apps.submit(
         "110602490-whisper",
         arguments={"url": url},
@@ -28,19 +37,31 @@ for url, name in metadata:
     result = handler.get()
     for chunk in result["chunks"]:
         if chunk["text"] not in results:
-            results[chunk["text"]] = {
-                "timestamp": chunk["timestamp"],
-                "url": url,
-                "name": name,
-            }
+            results[chunk["text"]] = [
+                {
+                    "timestamp": chunk["timestamp"],
+                    "url": url,
+                    "name": name,
+                }
+            ]
         else:
+            results[chunk["text"]].append(
+                {
+                    "timestamp": chunk["timestamp"],
+                    "url": url,
+                    "name": name,
+                }
+            )
             print(
-                f"Repeat found - text:{chunk['text']} between {results[chunk['text']]['name']} and {name}"
+                f"Repeat found - text:{chunk['text']} between {', '.join([a['name'] for a in results[chunk['text']]])} and {name}"
             )
 
-print(results)
-with open("results.json", "w") as json_file:
-    json.dump(results, json_file)
+    count += 1
+    if count % 20 == 0:
+        print_json()
 
-    # results[name] = result
-    # print(f"Result for {name}: {result}")
+print(results)
+print_json()
+
+# results[name] = result
+# print(f"Result for {name}: {result}")
