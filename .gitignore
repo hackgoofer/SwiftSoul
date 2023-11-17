@@ -6,3 +6,4 @@ metadata.txt
 raw_music
 *.mp3
 *.txt
+scrape.py

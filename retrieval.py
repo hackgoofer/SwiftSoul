@@ -3,23 +3,13 @@ import json
 from dotenv import load_dotenv
 import vecs
 import requests
+import os
 
 load_dotenv()
 
 from openai import OpenAI
 import boto3
 from pydub import AudioSegment
-
-
-def download_file_from_s3(bucket_name, s3_object_key, local_file_name):
-    s3 = boto3.client("s3")
-    s3.download_file(bucket_name, s3_object_key, local_file_name)
-
-
-def trim_audio(file_name, start_time_ms, end_time_ms, output_file_name):
-    audio = AudioSegment.from_mp3(file_name)
-    trimmed_audio = audio[start_time_ms:end_time_ms]
-    trimmed_audio.export(output_file_name, format="mp3")
 
 
 client = OpenAI()
@@ -36,7 +26,7 @@ class RetrievalInterface:
 class RetrievalDB(RetrievalInterface):
     def __init__(self, song_list=set()):
         # DB_CONNECTION = "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-        DB_CONNECTION = "postgresql://postgres:qeQ.xnvnGPGrdTt6f@db.pieozopknpjipisrgipw.supabase.co:5432/postgres"
+        DB_CONNECTION = os.getenv("DB_CONNECTION")
         vx = vecs.create_client(DB_CONNECTION)
         # self.docs = vx.get_or_create_collection(
         #     name="taylor", dimension=1536
@@ -230,6 +220,8 @@ for v in aggregate_results.values():
     for song in v:
         song_list.add(song["name"])
 
+print(os.getenv("DB_CONNECTION"))
+exit(1)
 # retrieval_system = RetrievalGPT()
 retrieval_system = RetrievalDB(song_list)
 # for result, value in aggregate_results.items():

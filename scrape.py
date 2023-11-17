@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 # Setup the selenium driver
 driver = webdriver.Chrome()  # or use the appropriate driver for your browser
 driver.get(
